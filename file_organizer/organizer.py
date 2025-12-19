@@ -1,16 +1,11 @@
-"""
-File Organizer Script
-Organizes files in a directory based on file type.
-"""
-
-import os
 import shutil
 from pathlib import Path
 
 
-def organize_by_type(directory_path: str) -> None:
+def organize_by_type(directory_path: str, dry_run: bool = False) -> None:
     """
     Organize files in the given directory by file extension.
+    If dry_run is True, no files are moved.
     """
 
     directory = Path(directory_path)
@@ -30,12 +25,17 @@ def organize_by_type(directory_path: str) -> None:
             target_folder.mkdir(exist_ok=True)
 
             destination = target_folder / item.name
-            shutil.move(str(item), str(destination))
 
-            print(f"Moved: {item.name} → {target_folder.name}/")
+            if dry_run:
+                print(f"[DRY-RUN] Would move: {item.name} → {target_folder.name}/")
+            else:
+                shutil.move(str(item), str(destination))
+                print(f"Moved: {item.name} → {target_folder.name}/")
 
 
 if __name__ == "__main__":
     path = input("Enter the directory path to organize: ").strip()
-    organize_by_type(path)
+    choice = input("Run in dry-run mode? (yes/no): ").strip().lower()
 
+    dry_run_mode = choice == "yes"
+    organize_by_type(path, dry_run=dry_run_mode)
